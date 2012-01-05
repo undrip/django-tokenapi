@@ -27,13 +27,14 @@ class TokenGenerator(object):
         except ValueError:
             return False
 
+
         try:
             ts = base36_to_int(ts_b36)
         except ValueError:
             return False
 
         # Check that the timestamp/uid has not been tampered with
-        if self._make_token_with_timestamp(user, ts) != token:
+        if self._make_token_with_timestamp(user, ts) != "{0}|{1}".format(user.id, token):
             return False
 
         # Check the timestamp is within limit
@@ -52,7 +53,7 @@ class TokenGenerator(object):
         hash = sha_constructor(settings.SECRET_KEY + unicode(user.id) +
             user.password + 
             unicode(timestamp)).hexdigest()[::2]
-        return "%s-%s" % (ts_b36, hash)
+        return "{0}|{1}-{2}".format(user.id, ts_b36, hash)
 
     def _num_days(self, dt):
         return (dt - date(2001,1,1)).days

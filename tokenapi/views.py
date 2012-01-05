@@ -21,7 +21,6 @@ def token_new(request):
             if user:
                 data = {
                     'token': token_generator.make_token(user),
-                    'user': user.pk,
                 }
                 return JSONResponse(data)
             else:
@@ -35,8 +34,14 @@ def token_new(request):
 # token/:token/:user.json
 # Required: user
 # Returns: success
-def token(request, token, user):
-    data = {}
+def token(request):
+    token = request.REQUEST.get('token')
+    user, token = token.split('|')
+
+    try:
+        user = int(user)
+    except ValueError:
+        return JSONError("Inavalid token format.")
 
     try:
         user = User.objects.get(pk=user)

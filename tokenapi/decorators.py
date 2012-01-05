@@ -13,11 +13,10 @@ def token_required(view_func):
     @csrf_exempt
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        user = request.REQUEST.get('user')
         token = request.REQUEST.get('token')
 
-        if user and token:
-            user = authenticate(pk=user, token=token)
+        if token:
+            user = authenticate(token=token)
             if user:
                 login(request, user)
                 return view_func(request, *args, **kwargs)
